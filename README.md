@@ -8,7 +8,7 @@
 4. [Github Actions](#github-actions)
 
 
-### Setup GC bucket storage**
+### Setup GC bucket storage
 
 In this method, we can store data in a Google Cloud Storage (GCS) bucket and fetch it using service account authentication.
 
@@ -69,12 +69,19 @@ Hereafter, in your local setup, you need to handle two things: the JSON file (dv
 
 - Copy the contents from this Kaggle dataset (https://www.kaggle.com/datasets/khushikhushikhushi/dog-breed-image-dataset) into the data folder and unzip it. Remove all files that are not needed (e.g., archive.zip is not needed after unzipping).
 
+**Tree example**
+
 |- data
+
 |----dataset
+
 |--------Beagle
+
 |--------Boxer
-|--------.
-|--------.
+
+|-------- etc folders
+
+|-------- etc folders
 
 - Install dvc and dvc-gs
 
