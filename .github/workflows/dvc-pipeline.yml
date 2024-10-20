@@ -1,17 +1,18 @@
-name: Train Test, Infer and Report
+name: DVC - Google Cloud Storage bucket Workflow
 on:
   workflow_dispatch:
 
 jobs:
-  train-test-infer-and-report:
+  dvc-gcs-workflow:
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
       repository-projects: write
       id-token: write
-    steps:
 
+    steps:
+      - uses: actions/checkout@v4
       - name: Set up Python Packages
         run: pip install -r requirements.txt
 

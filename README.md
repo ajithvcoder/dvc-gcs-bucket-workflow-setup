@@ -154,7 +154,9 @@ Below is the code used to set up authentication and pull data inside GitHub CI/C
           dvc pull -v
 ```
 
-- 
+- Now you can trigger workflow by clicking "Run workflow" in github actions
+
+![workflow-trigger](./assets/snap_workflow_trigger.png)
 
 **Reference**
 
