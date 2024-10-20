@@ -1,77 +1,73 @@
-### Using Service Account method with DVC in GIthub CI/CD pipeline
+### Using Service Account Method with DVC in GitHub CI/CD Pipeline
 
 **Content**
 
-1. Use gdrive storage
+1. [Setup GCS bucket storage](#setup-gcs-bucket-storage)
+2. [Local Setup](#local-setup)
+3. [Github Repo setup](#github-repo-setup)
+4. [Github Actions](#github-actions)
 
-2. Use GCS bucket storage
 
+### Setup GC bucket storage**
 
-References:
+In this method, we can store data in a Google Cloud Storage (GCS) bucket and fetch it using service account authentication.
 
-**Use GC bucket storage**
-
-In this method we can store data in google cloud storage bucket and fetch using serice account authentication
-
-To create a service account, navigate to IAM & Admin in the left sidebar, and select Service Accounts. 
+To create a service account, navigate to IAM & Admin in the left sidebar, and select Service Accounts.
 
 ![service_account_icon](./assets/snap_tutorial_1.png)
 
 
-Click + CREATE SERVICE ACCOUNT, enter a Service account name e.g. "My DVC project"
-if you are new and dont know what permission to chose better give owner permission
+Click + CREATE SERVICE ACCOUNT, enter a service account name (e.g., "My DVC Project"). If you are new and don't know what permissions to choose, it's better to give owner permissions.
 
 ![owner-permission](./assets/snap_tutorial_2.png)
 
-Give all user account for which u need to grant access
+Add all user accounts for which you need to grant access.
 
 ![email-access](./assets/snap_tutorial_3.png)
 
- Then click CREATE AND CONTINUE. 
- Click DONE and you will be returned to the overview page. 
- 
-Now you can see your service account and click it. Go to the Keys tab. 
+Then click CREATE AND CONTINUE. Click DONE, and you will be returned to the overview page.
+
+Now you can see your service account; click on it and go to the Keys tab.
 
 ![serivce-mail-id](./assets/snap_tutorial_4.png)
  
-Under Add key select Create new key, choose JSON, and click CREATE. 
+Under Add Key, select Create New Key, choose JSON, and click CREATE.
 
 ![key-creation](./assets/snap_tutorial_5.png)
  
-Download the generated projectname-xxxxxx.json key file to a safe location. 
+Download the generated projectname-xxxxxx.json key file to a safe location.
 
 #TODO: change to numbers
 
+Important: Store the API key in a local folder as credentials.json, but do not commit it to GitHub. If you do so, GitHub will raise a warning, and Google will be notified, revoking the credentials.
 
+In the Google Console search bar, type "Google Cloud Storage" and go there.
 
-- Store the api key in local folder as credentials.json but dont commit it to github. if u do so github will raise a warning but inturn google gets notified and revokes the credentials.
-
-- In google console search bar type "Google cloud storage" and go there
-
-- Click "Create" button -> Give a name to bucket -> In "Choose where to store data" select "Region" -> "asia-south1" (it can be anything just for example i told) -> Click what ever option that is default after this. -> Click "Create" at last
-
+Click the "Create" button -> Give a name to the bucket -> In "Choose where to store data," select "Region" -> "asia-south1" (this can be anything; I just used it as an example) -> Click whatever option is default after this -> Click "Create" at last.
 
 ![](./assets/snap_create_button.png)
 
 ![](./assets/snap_create_2.png)
 
 
-- Click "Create a folder" and then give a name "storage" (you can give any name) 
+- Click Create a folder and then give it the name "storage" (you can choose any name).
 
 ![](./assets/snap_create_folder.png)
 
-Now you would have got a folder similar to screenshot below
+Now you should see a folder similar to the screenshot below:
 
 ![](./assets/snap_create_folder_2.png)
 
-So the url or the location of this is gs://<bucket_name>/<folder_name> so for above folder it is "gs://dvctestbucket/storage"  where dvctestbucket is bucket name and storage is folder name.
+The URL or location of this is `gs://<bucket_name>/<folder_name>`. For the above folder, it is `gs://dvctestbucket/storage`, where `dvctestbucket` is the bucket name and `storage` is the folder name.
 
 
-**Here after in you local we need to handle and all you need is json file (dvcmanager-38xxxxxxx.json/any json with projectname-xxx.json which you downoaded as key) and google storage url (gs://dvctestbucket/storage)**
+### Local Setup
 
-- Create a folder "data" in local
+Hereafter, in your local setup, you need to handle two things: the JSON file (dvcmanager-38xxxxxxx.json or any JSON with projectname-xxx.json which you downloaded as a key) and the Google Storage URL (gs://dvctestbucket/storage).
 
-- Copy the contents from this https://www.kaggle.com/datasets/khushikhushikhushi/dog-breed-image-dataset to data folder and unzip it. Remove all files that are not needed eg: archive.zip is not needed after unzipping.
+- Create a folder named data locally.
+
+- Copy the contents from this Kaggle dataset (https://www.kaggle.com/datasets/khushikhushikhushi/dog-breed-image-dataset) into the data folder and unzip it. Remove all files that are not needed (e.g., archive.zip is not needed after unzipping).
 
 |- data
 |----dataset
@@ -88,11 +84,11 @@ So the url or the location of this is gs://<bucket_name>/<folder_name> so for ab
 
 - Run dvc init
 
-- Now run dvc remote add -d myremote gs://<mybucket>/<path> command. Reference https://dvc.org/doc/user-guide/data-management/remote-storage/google-cloud-storage 
+- Now run `dvc remote add -d myremote gs://<mybucket>/<path> command`. Reference [here](https://dvc.org/doc/user-guide/data-management/remote-storage/google-cloud-storage)
 
 eg:  ```dvc remote add -d myremote gs://dvctestbucket/storage````
 
-You can see that in .dvc file "myremote" would have got added
+You will see that "myremote" has been added in the .dvc file.
 
 ![dvc config](./assets/snap_myremote.png)
 
@@ -104,13 +100,23 @@ You can see that in .dvc file "myremote" would have got added
 
 - Run ```dvc push -r myremote -v```
 
-- Wait for 10 minutes if its like 800 MB data for pushing and if its in github actions wait for 15 minutes.
+- Wait for about 10 minutes if it's around 800 MB of data for pushing; if it's in GitHub Actions, wait for 15 minutes.
 
-Now you can check your google cloud bucket you would have a folder "files" like this
+Now you can check your Google Cloud bucket; you should see a folder named "files" like this:
 
 ![](./assets/snap_files_folder.png)
 
-**Github Actions**
+### Github Repo setup
+
+- Now push this to your GitHub repository. Note that in the .dvc folder, by default, you can only push the "config" and ".gitignore" files. Don't change this; let it remain as is.
+
+- Important: Never push the project-xxx.json file. If you do, Google will identify it and revoke the token; you'll need to set the key again.
+
+- Add only .dvc/config, .gitignore, and data.dvc files.
+
+- After pushing to repo, in github in your repo click on "Secrets and variables" -> "Actions" -> "Repository secret" in your GitHub repo and create a secret named "GDRIVE_CREDENTIALS_DATA" Copy the content of your project-xxx.json file (credentials.json file) into the content field.
+
+![secrets](./assets/snap_add_secret.png)
 
 - Now push this to github repo
 
@@ -120,9 +126,39 @@ Note in .dvc folder by default u can push only "config" and ".gitingore" file. D
 
 - Add `.dvc/config`, `.gitignore`, `data.dvc` files alone.
 
+- Click to "Secrets and variables" -> "Actions" -> "Reprository secret" in github repo and create a secret with name "GDRIVE_CREDENTIALS_DATA" and oopy the content of project-xxx.json file (credentials.json file) in the content.
+
+### Github Actions
+
+- Create a .github/workflows folder locally for setting up your GitHub Actions workflow.
+
+- You can refer to the `dvc-pipeline.yml` file for complete content. 
+
+Below is the code used to set up authentication and pull data inside GitHub CI/CD from Google Cloud Storage bucket:
 
 
- 
+```
+      # Note you can also directly use "GDRIVE_CREDENTIALS_DATA" as env variable and pull it
+      - name: Create credentials.json
+        env:
+          GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+        run: |
+          echo $GDRIVE_CREDENTIALS_DATA > credentials_1.json
+
+      - name: Modify DVC Remote
+        run: |
+          dvc remote modify --local myremote credentialpath credentials_1.json
+
+      - name: DVC Pull Data
+        run: |
+          dvc pull -v
+```
+
+- 
+
 **Reference**
 
-Refered 1st point alone in"Using service account" in https://dvc.org/doc/user-guide/data-management/remote-storage/google-drive#using-service-accounts
+- Refered 1st point alone in "Using service account" in https://dvc.org/doc/user-guide/data-management/remote-storage/google-drive#using-service-accounts
+- Google cloud storage - https://dvc.org/doc/user-guide/data-management/remote-storage/google-cloud-storage#google-cloud-storage
+- Custom authentication google cloud storage - https://dvc.org/doc/user-guide/data-management/remote-storage/google-cloud-storage#custom-authentication
+
