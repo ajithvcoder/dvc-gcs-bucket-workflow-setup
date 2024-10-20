@@ -158,6 +158,14 @@ Below is the code used to set up authentication and pull data inside GitHub CI/C
 
 ![workflow-trigger](./assets/snap_workflow_trigger.png)
 
+- You might see a error like this but its not a problem wait for sometime it is internally downloading files
+
+![default_error](./assets/snap_error_default.png)
+
+- After 5 minutes(Depending on the data size) you can see successfull run
+
+![run_success](./assets/snap_run_success.png)
+
 **Reference**
 
 - Refered 1st point alone in "Using service account" in https://dvc.org/doc/user-guide/data-management/remote-storage/google-drive#using-service-accounts
